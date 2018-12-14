@@ -179,7 +179,7 @@ void eval(char *cmdline)
         if ((pid = fork()) == 0) {
 	    setpgid(0,0);
             if(execve(argv[0], argv, environ) < 0) {
-                printf("%s: Command not found.\n", argv[0]);
+                printf("%s: Command not found\n", argv[0]);
 		kill(getppid(),SIGINT);
                 exit(0);
             }
@@ -285,15 +285,12 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
-    int status;
-/*    while(1)
+    while(1)
 	{
-		sleep(0.1);
-		if(waitpid(pid, &status, WNOHANG|WUNTRACED))
+		sleep(1);
+		if(fgpid(jobs)==0)
 			return;
-	}*/
-    if(waitpid(pid, &status, WUNTRACED) < 0)
-        unix_error("waitfg: waitpid error");
+	}
     return;
 }
 
@@ -308,9 +305,8 @@ void waitfg(pid_t pid)
  */
 void sigint_handler(int sig) 
 {
-    if(fgpid(jobs)){
+       	 if(fgpid(jobs)){
    	 kill(fgpid(jobs),SIGINT);
-   	 deletejob(jobs, fgpid(jobs));
     }
     // SKIP IMPLEMENTING THIS FUNCTION (by TA)
     return;
@@ -323,9 +319,8 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig) 
 {
-    if(fgpid(jobs)){
+	if(fgpid(jobs)){
    	kill(fgpid(jobs),SIGSTOP);
-	getjobpid(jobs,fgpid(jobs))->state = ST;
     }
     // SKIP IMPLEMENTING THIS FUNCTION (by TA)
     return;
